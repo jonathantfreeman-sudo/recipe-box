@@ -11,14 +11,66 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f4f0; color: #1a1a18; min-height: 100vh; }
 
-  .nav { background: #fff; border-bottom: 1px solid rgba(0,0,0,0.1); padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 52px; position: sticky; top: 0; z-index: 10; }
+  /* ── Loading & Auth screens ─────────────────────────────────────── */
+  #loading-screen, #auth-screen {
+    position: fixed; inset: 0; background: #f5f4f0;
+    display: flex; align-items: center; justify-content: center; z-index: 100;
+  }
+  .auth-card {
+    background: #fff; border: 1px solid rgba(0,0,0,0.1); border-radius: 16px;
+    padding: 2.5rem 2rem; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .auth-icon {
+    width: 52px; height: 52px; background: #2d6a4f; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 26px; margin: 0 auto 1.25rem;
+  }
+  .auth-card h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .auth-card > p { font-size: 14px; color: #6b6b68; margin-bottom: 1.75rem; line-height: 1.55; }
+  .auth-input {
+    width: 100%; height: 44px; padding: 0 14px;
+    border: 1px solid rgba(0,0,0,0.18); border-radius: 8px;
+    font-size: 15px; outline: none; margin-bottom: 10px; color: #1a1a18;
+  }
+  .auth-input:focus { border-color: #2d6a4f; box-shadow: 0 0 0 2px rgba(45,106,79,0.15); }
+  .auth-btn {
+    width: 100%; height: 44px; background: #2d6a4f; color: #fff;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer;
+  }
+  .auth-btn:hover { background: #245c44; }
+  .auth-btn:disabled { background: #e0e0e0; color: #aaa; cursor: not-allowed; }
+  .auth-msg { margin-top: 12px; font-size: 13px; min-height: 20px; line-height: 1.5; }
+  .auth-msg.success { color: #2d6a4f; }
+  .auth-msg.error { color: #b91c1c; }
+
+  /* ── Nav ────────────────────────────────────────────────────────── */
+  .nav {
+    background: #fff; border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem;
+    height: 52px; position: sticky; top: 0; z-index: 10;
+  }
   .nav-logo { font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-  .nav-logo-icon { width: 28px; height: 28px; background: #2d6a4f; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+  .nav-logo-icon {
+    width: 28px; height: 28px; background: #2d6a4f; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px;
+  }
   .nav-tabs { display: flex; gap: 4px; margin-left: auto; }
-  .nav-tab { background: none; border: none; padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; color: #6b6b68; transition: background 0.15s; }
+  .nav-tab {
+    background: none; border: none; padding: 6px 12px; border-radius: 6px;
+    font-size: 14px; cursor: pointer; color: #6b6b68; transition: background 0.15s;
+  }
   .nav-tab:hover { background: #f5f4f0; }
   .nav-tab.active { background: #f5f4f0; color: #1a1a18; font-weight: 500; }
+  .nav-user { display: flex; align-items: center; gap: 8px; margin-left: 12px; }
+  .nav-user-email { font-size: 12px; color: #999; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .btn-signout {
+    font-size: 12px; padding: 4px 10px; border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.16); background: none; cursor: pointer; color: #6b6b68;
+  }
+  .btn-signout:hover { background: #f5f4f0; }
 
+  /* ── Views ──────────────────────────────────────────────────────── */
   .view { display: none; padding: 1.5rem; max-width: 860px; margin: 0 auto; }
   .view.active { display: block; }
 
@@ -133,17 +185,40 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  .spinner-lg { width: 28px; height: 28px; border-width: 3px; }
 
   @media (max-width: 600px) {
     .view { padding: 1rem; }
     .detail-header { padding: 1rem; }
     .section-card { padding: 1rem; }
+    .nav-user-email { display: none; }
     #detail-content > div[style*="grid"] { display: block !important; }
     #detail-content > div[style*="grid"] > .section-card { margin-bottom: 12px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Loading screen -->
+<div id="loading-screen">
+  <div class="spinner spinner-lg" style="color:#2d6a4f"></div>
+</div>
+
+<!-- Auth screen -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-icon">🍴</div>
+    <h1>Recipe Box</h1>
+    <p>Sign in with your email to save and access your recipes from any device.</p>
+    <input class="auth-input" type="email" id="auth-email" placeholder="you@example.com"
+           onkeydown="if(event.key==='Enter')sendMagicLink()">
+    <button class="auth-btn" id="auth-btn" onclick="sendMagicLink()">Send magic link</button>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- Main app -->
+<div id="app" style="display:none">
 
 <nav class="nav">
   <div class="nav-logo">
@@ -153,6 +228,10 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="showView('recipes')">My recipes</button>
     <button class="nav-tab" onclick="showView('grocery')">Grocery list</button>
+  </div>
+  <div class="nav-user">
+    <span class="nav-user-email" id="nav-user-email"></span>
+    <button class="btn-signout" onclick="signOut()">Log out</button>
   </div>
 </nav>
 
@@ -192,6 +271,9 @@
   <div id="cook-content"></div>
 </div>
 
+</div><!-- #app -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const TAG_COLORS = {
   asian:{bg:'#fff3e0',color:'#b45309'},spicy:{bg:'#fef2f2',color:'#b91c1c'},
@@ -209,19 +291,133 @@ function tagStyle(t) {
   return `background:${c.bg};color:${c.color}`;
 }
 
+// ── State ─────────────────────────────────────────────────────────────
+let sb, currentUser;
 let recipes = [], currentRecipe = null, cookStep = 0;
 let checkedIngredients = {}, groceryChecked = {}, doneSteps = {};
 let activeFilter = null, editingNotes = false, editTags = [];
 
-// Storage helpers
-function load(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } }
-function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+// ── Screens ───────────────────────────────────────────────────────────
+function showScreen(screen) {
+  document.getElementById('loading-screen').style.display = screen === 'loading' ? 'flex' : 'none';
+  document.getElementById('auth-screen').style.display   = screen === 'auth'    ? 'flex' : 'none';
+  document.getElementById('app').style.display           = screen === 'app'     ? 'block': 'none';
+}
+
+// ── Supabase init ─────────────────────────────────────────────────────
+async function initSupabase() {
+  showScreen('loading');
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json());
+    if (cfg.error) throw new Error(cfg.error);
+    sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+
+    // Auth state listener (also handles magic-link redirects)
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        currentUser = session.user;
+        await loadRecipesFromDB();
+        document.getElementById('nav-user-email').textContent = currentUser.email;
+        showScreen('app');
+        renderGrid();
+      } else {
+        currentUser = null;
+        recipes = [];
+        showScreen('auth');
+      }
+    });
+
+    // Check existing session
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) showScreen('auth');
+
+  } catch (e) {
+    console.error('Init error:', e);
+    showScreen('auth');
+    setAuthMsg('Could not connect. Check your Supabase environment variables.', 'error');
+  }
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────
+async function sendMagicLink() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) { setAuthMsg('Enter your email address.', 'error'); return; }
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = true;
+  setAuthMsg('Sending…', '');
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.origin }
+  });
+  btn.disabled = false;
+  if (error) setAuthMsg(error.message, 'error');
+  else setAuthMsg('✉️ Check your email for the magic link!', 'success');
+}
+
+function setAuthMsg(msg, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.className = 'auth-msg ' + type;
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+}
+
+// ── Database helpers ──────────────────────────────────────────────────
+function dbToRecipe(row) {
+  return { ...row, addedAt: row.added_at };
+}
+
+async function loadRecipesFromDB() {
+  const { data, error } = await sb
+    .from('recipes')
+    .select('*')
+    .order('added_at', { ascending: false });
+  if (!error) recipes = (data || []).map(dbToRecipe);
+}
+
+async function insertRecipeToDB(recipe) {
+  const { data, error } = await sb
+    .from('recipes')
+    .insert({
+      user_id: currentUser.id,
+      title: recipe.title,
+      source: recipe.source,
+      servings: recipe.servings,
+      time: recipe.time,
+      difficulty: recipe.difficulty,
+      emoji: recipe.emoji,
+      description: recipe.description,
+      ingredients: recipe.ingredients || [],
+      steps: recipe.steps || [],
+      tags: recipe.tags || [],
+      notes: recipe.notes || '',
+      url: recipe.url,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return dbToRecipe(data);
+}
+
+async function updateRecipeToDB(id, fields) {
+  const { error } = await sb.from('recipes').update(fields).eq('id', id);
+  if (error) console.error('Update error:', error);
+}
+
+async function deleteRecipeFromDB(id) {
+  const { error } = await sb.from('recipes').delete().eq('id', id);
+  if (error) console.error('Delete error:', error);
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────
+function loadLocal(key, def) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; } }
+function saveLocal(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
 function init() {
-  recipes = load('rb-recipes', []);
-  checkedIngredients = load('rb-ing-checks', {});
-  groceryChecked = load('rb-grocery', {});
-  renderGrid();
+  checkedIngredients = loadLocal('rb-ing-checks', {});
+  groceryChecked     = loadLocal('rb-grocery', {});
 }
 
 function showView(v) {
@@ -240,6 +436,7 @@ function setStatus(msg, type = '') {
   el.innerHTML = type === 'loading' ? `<div class="spinner"></div> ${msg}` : msg;
 }
 
+// ── Add recipe ────────────────────────────────────────────────────────
 async function addRecipe() {
   const input = document.getElementById('url-input');
   const url = input.value.trim();
@@ -257,13 +454,12 @@ async function addRecipe() {
     });
     if (!resp.ok) throw new Error('API error');
     const recipe = await resp.json();
-    recipe.id = Date.now().toString();
     recipe.url = url;
-    recipe.addedAt = new Date().toISOString();
-    recipe.notes = '';
+    recipe.notes = recipe.notes || '';
     recipe.tags = recipe.tags || [];
-    recipes.unshift(recipe);
-    save('rb-recipes', recipes);
+
+    const saved = await insertRecipeToDB(recipe);
+    recipes.unshift(saved);
     input.value = '';
     setStatus('Recipe added!');
     setTimeout(() => setStatus(''), 2500);
@@ -274,6 +470,7 @@ async function addRecipe() {
   document.getElementById('add-btn').disabled = false;
 }
 
+// ── Filter & grid ─────────────────────────────────────────────────────
 function getAllTags() {
   const s = new Set();
   recipes.forEach(r => (r.tags || []).forEach(t => s.add(t)));
@@ -322,21 +519,23 @@ function renderGrid() {
 function openRecipe(id) { currentRecipe = recipes.find(r => r.id === id); cookStep = 0; doneSteps = {}; editingNotes = false; showView('detail'); }
 function startCook(id) { currentRecipe = recipes.find(r => r.id === id); cookStep = 0; showView('cook'); }
 
-function deleteRecipe(id) {
+async function deleteRecipe(id) {
   if (!confirm('Remove this recipe?')) return;
+  await deleteRecipeFromDB(id);
   recipes = recipes.filter(r => r.id !== id);
-  save('rb-recipes', recipes);
   if (currentRecipe && currentRecipe.id === id) currentRecipe = null;
   renderGrid();
 }
 
+// ── Ingredient checks (session-local) ────────────────────────────────
 function toggleIngredient(recipeId, idx) {
   const key = recipeId + '-' + idx;
   checkedIngredients[key] = !checkedIngredients[key];
-  save('rb-ing-checks', checkedIngredients);
+  saveLocal('rb-ing-checks', checkedIngredients);
   renderDetail();
 }
 
+// ── Detail view ───────────────────────────────────────────────────────
 function renderDetail() {
   if (!currentRecipe) return;
   const r = currentRecipe;
@@ -374,7 +573,7 @@ function renderDetail() {
     <div class="detail-header">
       <div style="font-size:36px;margin-bottom:10px">${r.emoji || '🍽️'}</div>
       <div class="detail-title">${r.title}</div>
-      <div class="detail-source"><a href="${r.url}" target="_blank" rel="noopener" style="color:#999;text-decoration:none">${r.source || r.url}</a></div>
+      <div class="detail-source"><a href="${r.url}" target="_blank" rel="noopener" style="color:#999;text-decoration:none">${r.source || r.url}</div>
       <div class="detail-meta">
         ${r.time ? `<div class="detail-meta-item">⏱ <strong>${r.time}</strong></div>` : ''}
         ${r.servings ? `<div class="detail-meta-item">🍽 <strong>${r.servings}</strong></div>` : ''}
@@ -421,26 +620,28 @@ function renderTagSuggestions() {
   const el = document.getElementById('tag-suggestions');
   if (el) el.innerHTML = SUGGESTED_TAGS.filter(t => !editTags.includes(t) && (!val || t.includes(val))).map(t => `<button class="tag-suggestion" onclick="addEditTag('${t}')">${t}</button>`).join('');
 }
+
 async function saveTags() {
   currentRecipe.tags = [...editTags];
+  await updateRecipeToDB(currentRecipe.id, { tags: currentRecipe.tags });
   const idx = recipes.findIndex(r => r.id === currentRecipe.id);
   if (idx > -1) recipes[idx] = currentRecipe;
-  save('rb-recipes', recipes);
   renderGrid(); renderDetail();
 }
 
 function startEditNotes() { editingNotes = true; renderDetail(); setTimeout(() => document.getElementById('notes-input')?.focus(), 0); }
 function cancelNotes() { editingNotes = false; renderDetail(); }
-function saveNotes() {
+async function saveNotes() {
   currentRecipe.notes = document.getElementById('notes-input').value;
+  await updateRecipeToDB(currentRecipe.id, { notes: currentRecipe.notes });
   const idx = recipes.findIndex(r => r.id === currentRecipe.id);
   if (idx > -1) recipes[idx] = currentRecipe;
-  save('rb-recipes', recipes);
   editingNotes = false; renderDetail();
 }
 
 function toggleStep(i, recipeId) { const key = recipeId + '-step-' + i; doneSteps[key] = !doneSteps[key]; renderDetail(); }
 
+// ── Cook mode ─────────────────────────────────────────────────────────
 function renderCook() {
   if (!currentRecipe) return;
   const r = currentRecipe, steps = r.steps || [], el = document.getElementById('cook-content');
@@ -472,6 +673,7 @@ function renderCook() {
     ${r.notes ? `<div style="margin-top:1rem;padding:12px 16px;background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:10px;font-size:13px;color:#6b6b68;line-height:1.6"><strong style="color:#1a1a18">Your notes</strong><br>${r.notes}</div>` : ''}`;
 }
 
+// ── Grocery list ──────────────────────────────────────────────────────
 function renderGrocery() {
   const el = document.getElementById('grocery-content');
   if (!recipes.length) {
@@ -499,13 +701,15 @@ function renderGrocery() {
 function toggleGrocery(recipeId, idx) {
   const key = recipeId + '-grocery-' + idx;
   groceryChecked[key] = !groceryChecked[key];
-  save('rb-grocery', groceryChecked);
+  saveLocal('rb-grocery', groceryChecked);
   renderGrocery();
 }
 
-function clearGroceryChecks() { groceryChecked = {}; save('rb-grocery', groceryChecked); renderGrocery(); }
+function clearGroceryChecks() { groceryChecked = {}; saveLocal('rb-grocery', groceryChecked); renderGrocery(); }
 
+// ── Boot ──────────────────────────────────────────────────────────────
 init();
+initSupabase();
 </script>
 </body>
 </html>
